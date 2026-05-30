@@ -46,7 +46,7 @@ export default function Splash() {
           ...T(.7),
         }}>Visuals</div>
 
-        <p className="lede" style={{ maxWidth: 540, marginTop: 'clamp(28px,4vw,48px)', ...T(1.1) }}>
+        <p className="lede" style={{ maxWidth: 520, marginTop: 'clamp(24px,4vw,48px)', textWrap:'balance', ...T(1.1) }}>
           Photographs that hold the day still. Weddings, portraits<br />
           and the quiet milestones in between.
         </p>

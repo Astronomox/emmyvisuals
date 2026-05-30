@@ -70,7 +70,7 @@ export default function Services() {
         </div>
 
         {/* Pricing cards */}
-        <div className="reveal services-grid" style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:16, alignItems:'stretch' }}>
+        <div className="reveal services-grid" style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:16, alignItems:'start' }}>
           {tiers.map(t => (
             <article key={t.name} style={{
               display:'flex', flexDirection:'column',

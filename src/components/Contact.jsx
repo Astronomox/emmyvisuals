@@ -5,41 +5,65 @@ const SVCS = ['Weddings','Portraits','Events and Birthdays','Brand and Corporate
 
 export default function Contact() {
   const [sent, setSent] = useState(false)
+  const [sending, setSending] = useState(false)
   const [form, setForm] = useState({ name:'', email:'', date:'', service:'Weddings', message:'' })
   const [errors, setErrors] = useState({})
   useReveal()
 
-  const set = k => e => setForm(f => ({ ...f, [k]: e.target.value }))
+  const set = k => e => {
+    setForm(f => ({ ...f, [k]: e.target.value }))
+    if (errors[k]) setErrors(e => ({ ...e, [k]: '' }))
+  }
 
   const validate = () => {
     const e = {}
     if (!form.name.trim())    e.name    = 'Your name is required'
     if (!form.email.trim())   e.email   = 'Your email is required'
-    if (form.email && !/\S+@\S+\.\S+/.test(form.email)) e.email = 'Enter a valid email'
+    else if (!/\S+@\S+\.\S+/.test(form.email)) e.email = 'Enter a valid email address'
     if (!form.message.trim()) e.message = 'Tell me about the day'
     return e
   }
 
-  const submit = e => {
+  const submit = async e => {
     e.preventDefault()
     const errs = validate()
     if (Object.keys(errs).length) { setErrors(errs); return }
     setErrors({})
+    setSending(true)
+    await new Promise(r => setTimeout(r, 900)) // simulate send
+    setSending(false)
     setSent(true)
   }
 
-  return (
-    <section className="page" style={{ paddingTop:'clamp(105px,13vh,148px)', paddingBottom:120 }}>
-      <div className="wrap">
-        <div className='contact-grid' style={{ display:'grid', gridTemplateColumns:'1fr 1.15fr', gap:'clamp(40px,7vw,100px)', alignItems:'start' }}>
+  const Field = ({ label, k, type='text', placeholder, required }) => (
+    <div>
+      <label style={{ fontSize:10, letterSpacing:'.14em', textTransform:'uppercase', fontWeight:500, color: errors[k] ? '#c0504a' : 'var(--muted)', display:'block', marginBottom:6 }}>
+        {label}{required && ' *'}
+      </label>
+      <input
+        className="field"
+        type={type}
+        placeholder={placeholder}
+        value={form[k]}
+        onChange={set(k)}
+        style={{ borderColor: errors[k] ? '#c0504a' : '' }}
+      />
+      {errors[k] && <span style={{ fontSize:12, color:'#c0504a', marginTop:5, display:'block' }}>{errors[k]}</span>}
+    </div>
+  )
 
-          {/* Left info */}
+  return (
+    <section className="page" style={{ paddingTop:'clamp(90px,12vh,140px)', paddingBottom:100 }}>
+      <div className="wrap">
+        <div className="contact-grid" style={{ display:'grid', gridTemplateColumns:'1fr 1.1fr', gap:'clamp(36px,6vw,90px)', alignItems:'start' }}>
+
+          {/* Left */}
           <div className="reveal">
-            <div className="eyebrow" style={{ marginBottom:16 }}>Booking and Enquiries</div>
-            <h1 className="disp" style={{ fontSize:'clamp(38px,5.5vw,68px)', lineHeight:.95, marginBottom:20 }}>
+            <div className="eyebrow" style={{ marginBottom:14 }}>Get in touch</div>
+            <h1 className="disp" style={{ fontSize:'clamp(36px,5.5vw,64px)', lineHeight:.95, marginBottom:18 }}>
               Let's hold<br/>your day still
             </h1>
-            <p className="body-t" style={{ maxWidth:340, marginBottom:44 }}>
+            <p className="body-t" style={{ maxWidth:340, marginBottom:40 }}>
               Tell me what you're planning. I reply personally to every enquiry, usually within a day.
             </p>
             <div style={{ display:'flex', flexDirection:'column' }}>
@@ -47,10 +71,10 @@ export default function Contact() {
                 ['Studio',    '14 Bourdillon Road, Ikoyi, Lagos'],
                 ['Hours',     'Tuesday to Saturday, 9am to 6pm'],
                 ['Email',     'hello@emmyvisuals.studio'],
-                ['Phone',     '+234 802 000 0000'],
+                ['Phone',     '+234 905 156 3208'],
                 ['Instagram', '@emmyvisuals'],
               ].map(([k, v]) => (
-                <div key={k} style={{ display:'grid', gridTemplateColumns:'90px 1fr', gap:16, padding:'15px 0', borderBottom:'1px solid var(--line)' }}>
+                <div key={k} style={{ display:'grid', gridTemplateColumns:'80px 1fr', gap:14, padding:'13px 0', borderBottom:'1px solid var(--line)' }}>
                   <span className="eyebrow" style={{ paddingTop:2 }}>{k}</span>
                   <span style={{ fontSize:14, color:'var(--ink)', lineHeight:1.5 }}>{v}</span>
                 </div>
@@ -61,62 +85,76 @@ export default function Contact() {
           {/* Form */}
           <div className="reveal">
             {sent ? (
-              <div style={{ padding:'60px 0', textAlign:'center' }}>
-                <div style={{ width:56, height:56, borderRadius:'50%', background:'var(--ink)', color:'var(--bg)', display:'grid', placeItems:'center', margin:'0 auto 24px' }}>
+              <div style={{ padding:'52px 0', textAlign:'center' }}>
+                <div style={{ width:54, height:54, borderRadius:'50%', background:'var(--ink)', color:'var(--bg)', display:'grid', placeItems:'center', margin:'0 auto 22px' }}>
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><polyline points="20,6 9,17 4,12"/></svg>
                 </div>
-                <h3 className="disp" style={{ fontSize:32 }}>Sent, {form.name.split(' ')[0]}.</h3>
+                <h3 className="disp" style={{ fontSize:30 }}>Sent, {form.name.split(' ')[0]}.</h3>
                 <p className="body-t" style={{ marginTop:10, marginBottom:28 }}>I will be in touch at {form.email} shortly.</p>
                 <button className="btn ghost" onClick={() => { setSent(false); setForm({ name:'', email:'', date:'', service:'Weddings', message:'' }) }}>
                   Send another
                 </button>
               </div>
             ) : (
-              <form onSubmit={submit} noValidate style={{ display:'flex', flexDirection:'column', gap:20 }}>
-                <div>
-                  <h2 className="disp" style={{ fontSize:32, marginBottom:6 }}>Start a conversation</h2>
-                  <p style={{ fontSize:13, color:'var(--muted)' }}>All fields marked are required.</p>
+              <form onSubmit={submit} noValidate style={{ display:'flex', flexDirection:'column', gap:16 }}>
+                <div style={{ marginBottom:4 }}>
+                  <h2 className="disp" style={{ fontSize:30, marginBottom:4 }}>Start a conversation</h2>
+                  <p style={{ fontSize:13, color:'var(--muted)' }}>Fields marked * are required.</p>
                 </div>
 
-                {/* Name + Email row */}
                 <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:14 }}>
-                  <div>
-                    <label style={{ fontSize:'10px', letterSpacing:'.14em', textTransform:'uppercase', color: errors.name ? '#c0504a' : 'var(--muted)', display:'block', marginBottom:6 }}>Name *</label>
-                    <input className="field" type="text" placeholder="Your full name" value={form.name} onChange={set('name')} style={{ borderColor: errors.name ? '#c0504a' : '' }} />
-                    {errors.name && <span style={{ fontSize:11.5, color:'#c0504a', marginTop:4, display:'block' }}>{errors.name}</span>}
-                  </div>
-                  <div>
-                    <label style={{ fontSize:'10px', letterSpacing:'.14em', textTransform:'uppercase', color: errors.email ? '#c0504a' : 'var(--muted)', display:'block', marginBottom:6 }}>Email *</label>
-                    <input className="field" type="email" placeholder="you@email.com" value={form.email} onChange={set('email')} style={{ borderColor: errors.email ? '#c0504a' : '' }} />
-                    {errors.email && <span style={{ fontSize:11.5, color:'#c0504a', marginTop:4, display:'block' }}>{errors.email}</span>}
-                  </div>
+                  <Field label="Name" k="name" placeholder="Your full name" required />
+                  <Field label="Email" k="email" type="email" placeholder="you@email.com" required />
                 </div>
 
-                {/* Date + Service row */}
                 <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:14 }}>
                   <div>
-                    <label style={{ fontSize:'10px', letterSpacing:'.14em', textTransform:'uppercase', color:'var(--muted)', display:'block', marginBottom:6 }}>Date in mind</label>
-                    <input className="field" type="text" placeholder="e.g. 14 February 2026" value={form.date} onChange={set('date')} />
+                    <label style={{ fontSize:10, letterSpacing:'.14em', textTransform:'uppercase', fontWeight:500, color:'var(--muted)', display:'block', marginBottom:6 }}>Date in mind</label>
+                    <input className="field" type="date" value={form.date} onChange={set('date')} />
                   </div>
                   <div>
-                    <label style={{ fontSize:'10px', letterSpacing:'.14em', textTransform:'uppercase', color:'var(--muted)', display:'block', marginBottom:6 }}>Service</label>
+                    <label style={{ fontSize:10, letterSpacing:'.14em', textTransform:'uppercase', fontWeight:500, color:'var(--muted)', display:'block', marginBottom:6 }}>Service</label>
                     <select className="field" value={form.service} onChange={set('service')} style={{ appearance:'none', cursor:'pointer' }}>
                       {SVCS.map(s => <option key={s}>{s}</option>)}
                     </select>
                   </div>
                 </div>
 
-                {/* Message */}
                 <div>
-                  <label style={{ fontSize:'10px', letterSpacing:'.14em', textTransform:'uppercase', color: errors.message ? '#c0504a' : 'var(--muted)', display:'block', marginBottom:6 }}>Message *</label>
-                  <textarea className="field" rows={5} placeholder="Tell me about the day, the people, what matters most..." value={form.message} onChange={set('message')} style={{ resize:'vertical', borderColor: errors.message ? '#c0504a' : '' }} />
-                  {errors.message && <span style={{ fontSize:11.5, color:'#c0504a', marginTop:4, display:'block' }}>{errors.message}</span>}
+                  <label style={{ fontSize:10, letterSpacing:'.14em', textTransform:'uppercase', fontWeight:500, color: errors.message ? '#c0504a' : 'var(--muted)', display:'block', marginBottom:6 }}>
+                    Message *
+                  </label>
+                  <textarea
+                    className="field" rows={5}
+                    placeholder="Tell me about the day, the people, what matters most..."
+                    value={form.message}
+                    onChange={set('message')}
+                    style={{ resize:'vertical', borderColor: errors.message ? '#c0504a' : '' }}
+                  />
+                  {errors.message && <span style={{ fontSize:12, color:'#c0504a', marginTop:5, display:'block' }}>{errors.message}</span>}
                 </div>
 
-                <button className="btn" type="submit" style={{ alignSelf:'flex-start', marginTop:4 }}>
-                  Send Enquiry
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12,5 19,12 12,19"/></svg>
+                <button
+                  className="btn"
+                  type="submit"
+                  disabled={sending}
+                  style={{ alignSelf:'flex-start', marginTop:4, minWidth:160, justifyContent:'center' }}
+                >
+                  {sending ? (
+                    <span style={{ display:'flex', alignItems:'center', gap:8 }}>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" style={{ animation:'spin 1s linear infinite' }}>
+                        <path d="M21 12a9 9 0 1 1-6.219-8.56"/>
+                      </svg>
+                      Sending...
+                    </span>
+                  ) : (
+                    <span style={{ display:'flex', alignItems:'center', gap:8 }}>
+                      Submit Enquiry
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12,5 19,12 12,19"/></svg>
+                    </span>
+                  )}
                 </button>
+                <style>{`@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}`}</style>
               </form>
             )}
           </div>

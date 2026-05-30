@@ -97,7 +97,7 @@ export default function Lightbox({ photos, index, onClose }) {
         {/* Prev */}
         <button onClick={() => go(-1)} aria-label="Previous" style={{
           position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)',
-          width: 44, height: 44, borderRadius: '50%', zIndex: 2, flexShrink: 0,
+          width: 48, height: 48, borderRadius: '50%', minWidth: 48, minHeight: 48, zIndex: 2, flexShrink: 0,
           background: 'rgba(255,255,255,.1)', border: '1px solid rgba(255,255,255,.18)',
           color: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
         }}>
@@ -107,7 +107,7 @@ export default function Lightbox({ photos, index, onClose }) {
         {/* Next */}
         <button onClick={() => go(1)} aria-label="Next" style={{
           position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)',
-          width: 44, height: 44, borderRadius: '50%', zIndex: 2, flexShrink: 0,
+          width: 48, height: 48, borderRadius: '50%', minWidth: 48, minHeight: 48, zIndex: 2, flexShrink: 0,
           background: 'rgba(255,255,255,.1)', border: '1px solid rgba(255,255,255,.18)',
           color: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
         }}>
